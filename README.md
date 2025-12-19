@@ -73,7 +73,7 @@ The project uses the **Synapse Multi-Organ CT Dataset**.
 
 1. **Clone the repository**
 ```
-git clone https://github.com/yourusername/swin-unet-synapse.git
+git clone https://github.com/Jacky-0202/SwinUNet-Seg.git
 cd swin-unet-synapse
 ```
     
