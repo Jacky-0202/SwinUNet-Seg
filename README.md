@@ -27,7 +27,7 @@ However, several challenges were observed:
 **Conclusion**:
 Given these findings, the project focus was shifted back to **Synapse Multi-Organ Segmentation**. This domain leverages Swin-UNet's strength in capturing long-range dependencies for fixed anatomical structures, providing a more effective demonstration of the architecture's potential in high-precision tasks.
 
-![Prediction Result1](figures/case0001_npy_vis.png)
+![Prediction Result1](figures/predict.png)
 ![Prediction Result2](figures/training_curves.png)
 
 ---
