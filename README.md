@@ -1,31 +1,21 @@
-# Swin-UNet for Synapse Multi-Organ Segmentation
+# Swin-UNet: From Natural Scenes to Medical Imaging
 
 ![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=for-the-badge&logo=PyTorch&logoColor=white)
 ![Medical Segmentation](https://img.shields.io/badge/Medical-Segmentation-blue?style=for-the-badge)
 
-This repository contains a PyTorch implementation of **Swin-UNet** (Swin Transformer-based U-Net) for multi-organ segmentation using the **Synapse** dataset. The model leverages the hierarchical Swin Transformer as the backbone to capture long-range dependencies, achieving superior performance in medical image segmentation tasks.
+This repository implements **Swin-UNet**, a pure Transformer-based U-Net architecture. While the primary demonstration focuses on **Synapse Multi-Organ Segmentation** (CT scans), the codebase is engineered to be **format-agnostic**, supporting both medical formats (`.npz`, `.h5`) and standard image formats (`.jpg`, `.png`).
 
 ---
-### 🌟 Key Features
-- **Swin Transformer Backbone**: Replaces standard CNNs with a pure Transformer-based encoder for better global context.
-- **U-Shaped Architecture**: Skip connections between encoder and decoder to preserve spatial details.
-- **Synapse Dataset Support**: specifically designed for 9-class abdominal organ segmentation.
-- **3D Volume Inference**: Includes slice-by-slice inference with 3D reconstruction evaluation.
-- **Comprehensive Logging**: Tracks Dice, mIoU, and Loss with CSV logging and scientific notation for low learning rates.
+### 🔬 Domain Analysis: Why Synapse?
+The ADE20K Experiment
+Initial experiments were conducted on the ADE20K dataset (Scene Parsing, 150 classes) to evaluate Swin-UNet on complex natural images. The pipeline successfully handled .jpg inputs and multi-class masking.
 
----
-### 🔬 Experimental Context: From ADE20K to Synapse
+Strategic Pivot to Medical Imaging
+While the model performed adequately on natural scenes, our analysis revealed that Swin-UNet's inductive bias—specifically its ability to model global context—is far more effective for anatomical structures which have relatively fixed positions and shapes compared to the high variance of natural scenes.
 
-##### Why switch back to Medical Imaging?
-During the initial phase of this project, experiments were conducted using the **ADE20K** dataset (Scene Parsing, 150 classes). The goal was to test Swin-UNet's capability on complex natural scenes.
+Decision: The project focus was shifted to Synapse to maximize the architecture's potential, achieving higher precision with optimized resource utilization.
 
-However, several challenges were observed:
-1.  **High Complexity**: ADE20K contains 150 diverse classes with high variability in scale and occlusion, making it significantly harder to converge compared to medical datasets.
-2.  **Resource Constraints**: To achieve competitive results on ADE20K, Swin-UNet typically requires larger input resolutions (e.g., 512x512 or higher) and extensive pre-training on ImageNet-22k, which significantly increased computational costs.
-3.  **Model Suitability**: Preliminary results showed that while the model captured global context well, the segmentation accuracy (mIoU) on small objects was suboptimal.
-
-**Conclusion**:
-Given these findings, the project focus was shifted back to **Synapse Multi-Organ Segmentation**. This domain leverages Swin-UNet's strength in capturing long-range dependencies for fixed anatomical structures, providing a more effective demonstration of the architecture's potential in high-precision tasks.
+Note: To switch back to general image training, simply update config.py to point to your .jpg directory and adjust NUM_CLASSES.
 
 ![Prediction Result1](figures/predict.png)
 ![Prediction Result2](figures/training_curves.png)
@@ -35,20 +25,18 @@ Given these findings, the project focus was shifted back to **Synapse Multi-Orga
 
 ```text
 ├── data/                       # Dataset directory
-│   └── synapse/
-│       ├── train_npz/          # Training slices (.npz)
-│       └── test_vol_h5/        # Testing volumes (.h5)
+│   ├── synapse/                # Medical Data (Current Focus)
+│   └── ade20k/                 # General Scene Data (Supported)
 ├── models/
-│   └── swinunet.py             # Swin-UNet model definition
+│   └── swinunet.py             # Swin-UNet architecture
 ├── utils/
-│   ├── dataset.py              # Custom Dataset class
-│   ├── logger.py               # CSV Logger
-│   ├── loss.py                 # Segmentation Loss (CrossEntropy + Dice)
-│   ├── metrics.py              # Dice and mIoU calculation
-│   └── plot.py                 # Training history visualization
-├── config.py                   # Configuration parameters
-├── train.py                    # Training script
-├── predict_synapse.py          # Inference and 3D evaluation script
+│   ├── dataset.py              # Dual-mode dataset loader (Synapse & Standard RGB)
+│   ├── logger.py               # Custom CSV Logger
+│   ├── loss.py                 # Hybrid Loss (CrossEntropy + Dice)
+│   └── metrics.py              # Evaluation metrics
+├── config.py                   # Global configuration
+├── train.py                    # Unified training script
+├── predict_synapse.py          # 3D Inference & Visualization
 └── README.md
 ```
 
