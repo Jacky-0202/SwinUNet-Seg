@@ -7,13 +7,15 @@ This repository implements **Swin-UNet**, a pure Transformer-based U-Net archite
 
 ---
 ### 🔬 Domain Analysis: Why Synapse?
-The ADE20K Experiment
+
+The ADE20K Experiment:
 Initial experiments were conducted on the ADE20K dataset (Scene Parsing, 150 classes) to evaluate Swin-UNet on complex natural images. The pipeline successfully handled .jpg inputs and multi-class masking.
 
-Strategic Pivot to Medical Imaging
+Strategic Pivot to Medical Imaging:
 While the model performed adequately on natural scenes, our analysis revealed that Swin-UNet's inductive bias—specifically its ability to model global context—is far more effective for anatomical structures which have relatively fixed positions and shapes compared to the high variance of natural scenes.
 
-Decision: The project focus was shifted to Synapse to maximize the architecture's potential, achieving higher precision with optimized resource utilization.
+Decision: 
+The project focus was shifted to Synapse to maximize the architecture's potential, achieving higher precision with optimized resource utilization.
 
 Note: To switch back to general image training, simply update config.py to point to your .jpg directory and adjust NUM_CLASSES.
 
