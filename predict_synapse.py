@@ -68,7 +68,8 @@ def inference_single_slice(image_slice, model, device):
 
 def save_visual_sample(image_vol, label_vol, pred_vol, case_name, save_dir):
     """
-    Find the slice with the largest organ area and visualize it
+    Find the slice with the largest organ area and visualize it.
+    [Modified] Background changed to black for better contrast.
     """
     # Find slice index with the most organ pixels
     sums = np.sum(label_vol > 0, axis=(0, 1)) # Sum along H, W
@@ -78,13 +79,35 @@ def save_visual_sample(image_vol, label_vol, pred_vol, case_name, save_dir):
     gt = label_vol[:, :, best_slice_idx]
     pred = pred_vol[:, :, best_slice_idx]
     
-    plt.figure(figsize=(12, 4))
-    plt.subplot(1, 3, 1); plt.title(f"{case_name} (Slice {best_slice_idx})\nOriginal"); plt.imshow(img, cmap='gray'); plt.axis('off')
-    plt.subplot(1, 3, 2); plt.title("Ground Truth"); plt.imshow(gt, cmap='tab10', vmin=0, vmax=8, interpolation='nearest'); plt.axis('off')
-    plt.subplot(1, 3, 3); plt.title("Prediction"); plt.imshow(pred, cmap='tab10', vmin=0, vmax=8, interpolation='nearest'); plt.axis('off')
+    # Set dark background style
+    plt.style.use('dark_background') 
     
-    plt.tight_layout()
-    plt.savefig(os.path.join(save_dir, f"{case_name}_vis.png"))
+    # Create figure with specific facecolor (black)
+    fig = plt.figure(figsize=(12, 4), facecolor='black')
+    
+    # 1. Original Image
+    ax1 = plt.subplot(1, 3, 1)
+    ax1.set_title(f"Original", color='white')
+    ax1.imshow(img, cmap='gray')
+    ax1.axis('off')
+    
+    # 2. Ground Truth
+    ax2 = plt.subplot(1, 3, 2)
+    ax2.set_title("Ground Truth", color='white')
+    # Use 'nipy_spectral' or 'tab10' on black background looks good
+    # mask background (0) is transparent or dark
+    ax2.imshow(gt, cmap='nipy_spectral', vmin=0, vmax=8, interpolation='nearest') 
+    ax2.axis('off')
+
+    # 3. Prediction
+    ax3 = plt.subplot(1, 3, 3)
+    ax3.set_title("Prediction", color='white')
+    ax3.imshow(pred, cmap='nipy_spectral', vmin=0, vmax=8, interpolation='nearest')
+    ax3.axis('off')
+    
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
+    # Save with black facecolor
+    plt.savefig(os.path.join(save_dir, f"{case_name}_vis.png"), facecolor=fig.get_facecolor(), edgecolor='none')
     plt.close()
 
 def main():
@@ -119,19 +142,9 @@ def main():
         
         # 2. Load Volume
         with h5py.File(file_path, 'r') as f:
-            image = f['image'][:] # (H, W, D) or (D, H, W), usually Synapse is (Slice, H, W)
+            image = f['image'][:] 
             label = f['label'][:]
             
-            # Check shape orientation
-            # Assuming it is (Slice, H, W), we handle it accordingly
-            if image.shape[0] > image.shape[1] and image.shape[0] > image.shape[2]:
-                # Could be (Slice, H, W), common in medical data
-                pass 
-            else:
-                # Ensure we iterate over the Slice dimension
-                # Based on Synapse common format, usually (Slice, H, W)
-                pass
-
         print(f"\n🧠 Processing {case_name} | Shape: {image.shape}")
         
         # 3. Slice-by-slice Inference
